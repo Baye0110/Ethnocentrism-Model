@@ -41,13 +41,35 @@ public class Agent {
         return color;
     }
 
+    public boolean getCoopSame() {
+        return coopSame;
+    }
+
+    public boolean getCoopDiff() {
+        return coopDiff;
+    }
+
+    public double getPTR() {
+        return ptr;
+    }
+
     public void move(int dx, int dy) {
         this.xcor += dx;
         this.ycor += dy;
     }
     
     public void interact(Agent agent){
-
+        if (color.equals(agent.getColor())) {
+            if (coopSame) {
+                losePTR();
+                agent.gainPTR();
+            }
+        } else {
+            if (coopDiff) {
+                losePTR();
+                agent.gainPTR();
+            }
+        }
     }
 
     public void cooperate(Agent agent){
@@ -59,11 +81,26 @@ public class Agent {
     }
 
     public void losePTR(){
-        this.ptr = ptr -PARAM.getCostOfGiving();
+        this.ptr = ptr - PARAM.getCostOfGiving();
+    }
+
+    public void reproduce() {
     }
 
     public void mutate(){
-
+        Random random = new Random();
+        if (random.nextFloat() < PARAM.getMutationRate()) {
+            String newColor = PARAM.getRandomColor();
+            while (newColor.equals(color)) {
+                newColor = PARAM.getRandomColor();
+            }
+            color = newColor;
+        }
+        if (random.nextFloat() < PARAM.getMutationRate()) {
+            coopSame = !coopSame;
+        }
+        if (random.nextFloat() < PARAM.getMutationRate()) {
+            coopDiff = !coopDiff;
+        }
     }
-
 }

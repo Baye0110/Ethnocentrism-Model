@@ -25,7 +25,7 @@ public class PARAM {
     public static double getDeathRate(){
         return DEATH_RATE;
     }
-    public static double getImmgrantsPerDay(){
+    public static int getImmgrantsPerDay(){
         return IMMIGRANTS_PER_DAY;
     }
     public static double getInitialPTR(){

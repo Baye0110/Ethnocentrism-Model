@@ -10,7 +10,7 @@ public class PARAM {
     private final static double IMMIGRANT_CHANCE_COOPERATE_WITH_SAME = 0.5;
     private final static double IMMIGRANT_CHANCE_COOPERATE_WITH_DIFFERENT = 0.45;
     private final static String[] COLORS = {"red", "blue", "yellow", "green"};
-    private final static String[] SHAPES = {"circle", "square"};
+    private final static String[] SHAPES = {"circle", "circle 2", "square", "square 2"};
     private static final int GRID_SIZE = 20;
     private static final int CELL_SIZE = 30;
     private static final int NUM_AGENTS = 100;

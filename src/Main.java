@@ -46,11 +46,16 @@ public class Main extends JPanel implements ActionListener{
             int y = agent.getY() * PARAM.getCellSize();
 
             g.setColor(getColor(agent.getColor()));
-            if (agent.getShape().equals("circle")) {
+            if(agent.getShape().equals("circle")){
                 g.fillOval(x, y, PARAM.getCellSize(), PARAM.getCellSize());
-            } else {
+            }else if(agent.getShape().equals("square")){
                 g.fillRect(x, y, PARAM.getCellSize(), PARAM.getCellSize());
+            }else if(agent.getShape().equals("square 2")){
+                g.drawRect(x, y, PARAM.getCellSize(), PARAM.getCellSize());
+            }else{
+                g.drawOval(x, y, PARAM.getCellSize(), PARAM.getCellSize());
             }
+
         }
     }
 	

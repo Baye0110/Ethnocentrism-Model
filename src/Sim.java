@@ -1,27 +1,107 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Sim {
-    private int numCC;
-    private int numCD;
-    private int numDD;
-    private int numDC;
+    private List<Agent> numCC;
+    private List<Agent> numCD;
+    private List<Agent> numDD;
+    private List<Agent> numDC;
+    private List<Agent> Agents;
     private int numTick;
     private int numEmptyPatch;
-    private Map map = new Map(PARAM.getGridSize(), PARAM.getGridSize());
+    private Map map;
+
+    public Sim(){
+        numCC = new ArrayList<>();
+        numCD = new ArrayList<>();
+        numDD = new ArrayList<>();
+        numDC = new ArrayList<>();
+        Agents = new ArrayList<>();
+        numTick = 0;
+        map = new Map(PARAM.getGridSize(), PARAM.getGridSize());
+    }
 
     public void setupEmpty(){
+        numCC = new ArrayList<>();
+        numCD = new ArrayList<>();
+        numDD = new ArrayList<>();
+        numDC = new ArrayList<>();
+        numTick = 0;
     }
 
     public void setupFull(){
+        //need to clear previous agents first and then initialize
+        initalizeAgents();
+        System.out.println("numCC: " + numCC.size());
+        System.out.println("numCD: " + numCD.size());
+        System.out.println("numDD: " + numDD.size());
+        System.out.println("numDC: " + numDC.size());
+        for(Agent agent: numCC){
+            Agents.add(agent);
+        }
+
+        for(Agent agent: numCD){
+            Agents.add(agent);
+        }
+
+        for(Agent agent: numDD){
+            Agents.add(agent);
+        }
+
+        for(Agent agent: numDC){
+            Agents.add(agent);
+        }
+        System.out.println("Agents: " + Agents.size());
+        numTick = 0;
     }
 
     public void go(){
+        numTick += 1;
         immigration();
         interaction();
         reproduction();
         death();
+    }
+    public List<Agent> getAgents(){
+        return Agents;
+    }
+    public int getNumTick(){
+        return numTick;
+    }
+
+    public void initalizeAgents(){
+        Random random = new Random();
+        for (int i = 0; i < PARAM.getNumAgents(); i++) {
+            int x = random.nextInt(PARAM.getGridSize());
+            int y = random.nextInt(PARAM.getGridSize());
+            String color = PARAM.getRandomColor();
+            //String shape = PARAM.getRandomShape();
+            boolean coopSame = PARAM.getImmigrantChanceCooprateWithSame();
+            boolean coopDiff = PARAM.getImmigrantChanceCooprateWithDiff();
+			boolean death = PARAM.die();
+			double ptr = PARAM.getInitialPTR();
+            // if the agent cooperates with same they are a circle
+            if(coopSame && coopDiff){
+                //filled in circle (altruist)
+                numCC.add(new Agent(x, y, color, "circle", coopSame, 
+			coopDiff, ptr, death));
+            }else if(coopSame && !coopDiff){
+                //empty circle (ethnocentric)
+                numCD.add(new Agent(x, y, color, "circle 2", coopSame, 
+			coopDiff, ptr, death));
+            }else if(!coopSame && coopDiff){
+                //filled in square (cosmopolitan)
+                numDC.add(new Agent(x, y, color, "square", coopSame, 
+			coopDiff, ptr, death));
+            }else{
+                //empty square (egoist)
+                numDD.add(new Agent(x, y, color, "square 2", coopSame, 
+			coopDiff, ptr, death));
+            }
+        }
     }
 
     public void updateShape(Agent agent, Graphics g){

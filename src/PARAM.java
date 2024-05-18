@@ -14,7 +14,7 @@ public class PARAM {
     private static final int GRID_SIZE = 20;
     private static final int CELL_SIZE = 30;
     private static final int NUM_AGENTS = 100;
-    private static final int TIMER_DELAY = 100; // milliseconds
+    private static final int TIMER_DELAY = 1; // milliseconds
     //public int NUM_TICK = 0;
     //public int NUM_ROW;
     //public int NUM_COL;

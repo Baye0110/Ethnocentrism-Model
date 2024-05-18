@@ -7,53 +7,38 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Main extends JPanel implements ActionListener{
-	private List<Agent> Agents;
-    private Sim sim;
+	public List<Agent> Agents;
+    public Sim sim;
+    public Timer timer;
+    public boolean runing;
 
 	public Main() {
         Agents = new ArrayList<>();
-        initalizeAgents();
         sim = new Sim();
-        
-        Timer timer = new Timer(PARAM.getTimerDelay(), this);
-        timer.start();
-
+        timer = new Timer(PARAM.getTimerDelay(), this);
+        runing = false;
     }
 
 	public void outputResults(){
 
 	}
 
-	 public void initalizeAgents(){
-        Random random = new Random();
-        for (int i = 0; i < PARAM.getNumAgents(); i++) {
-            int x = random.nextInt(PARAM.getGridSize());
-            int y = random.nextInt(PARAM.getGridSize());
-            String color = PARAM.getRandomColor();
-            //String shape = PARAM.getRandomShape();
-            boolean coopSame = PARAM.getImmigrantChanceCooprateWithSame();
-            boolean coopDiff = PARAM.getImmigrantChanceCooprateWithDiff();
-			boolean death = PARAM.die();
-			double ptr = PARAM.getInitialPTR();
-            // if the agent cooperates with same they are a circle
-            if(coopSame && coopDiff){
-                //filled in circle (altruist)
-                Agents.add(new Agent(x, y, color, "circle", coopSame, 
-			coopDiff, ptr, death));
-            }else if(coopSame && !coopDiff){
-                //empty circle (ethnocentric)
-                Agents.add(new Agent(x, y, color, "circle 2", coopSame, 
-			coopDiff, ptr, death));
-            }else if(!coopSame && coopDiff){
-                //filled in square (cosmopolitan)
-                Agents.add(new Agent(x, y, color, "square", coopSame, 
-			coopDiff, ptr, death));
-            }else{
-                //empty square (egoist)
-                Agents.add(new Agent(x, y, color, "square 2", coopSame, 
-			coopDiff, ptr, death));
-            }
+    public void setAgents(List<Agent> Agents){
+        for(Agent agent : Agents){
+            this.Agents.add(agent);
         }
+    }
+
+    public boolean getRuning(){
+        return runing;
+    }
+
+    public void setRuning(boolean b){
+        this.runing = b;
+    }
+
+	public int getAL(){
+        return Agents.size();
     }
 
     @Override
@@ -110,6 +95,42 @@ public class Main extends JPanel implements ActionListener{
 
             Main gui = new Main();
             frame.add(gui, BorderLayout.CENTER);
+
+            setEmptyButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    System.out.println("setEmpty button clicked");
+                }
+            });
+
+            setFullButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    System.out.println("setFull button clicked");
+                    gui.sim.setupFull();
+                    gui.setAgents(gui.sim.getAgents());
+                    System.out.println("length: " + gui.getAL());
+                    gui.repaint();
+                }
+            });
+
+            goButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    System.out.println("go button clicked");
+                    if(gui.getRuning()){
+                        gui.timer.stop();
+                        gui.setRuning(false);
+
+                    }else{
+                        gui.timer.start();
+                        gui.setRuning(true);
+                    }
+                }
+            });
+
+
+
             frame.setVisible(true);
 
         });

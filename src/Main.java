@@ -8,6 +8,7 @@ import java.awt.*;
 
 public class Main extends JPanel implements ActionListener{
 	public List<Agent> Agents;
+    public Map map;
     public Sim sim;
     public Timer timer;
     public boolean runing;
@@ -17,6 +18,7 @@ public class Main extends JPanel implements ActionListener{
         sim = new Sim();
         timer = new Timer(PARAM.getTimerDelay(), this);
         runing = false;
+        map = sim.getMap();
     }
 
 	public void outputResults(){
@@ -54,7 +56,7 @@ public class Main extends JPanel implements ActionListener{
     public void actionPerformed(ActionEvent e) {
         moveAgents();
         sim.go();
-        updateStats();
+        //updateStats();
         repaint();
     }
 
@@ -99,6 +101,7 @@ public class Main extends JPanel implements ActionListener{
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     System.out.println("setEmpty button clicked");
+                    gui.sim.setupEmpty();
                 }
             });
 

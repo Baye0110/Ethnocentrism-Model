@@ -29,6 +29,7 @@ public class Sim {
         numCD = new ArrayList<>();
         numDD = new ArrayList<>();
         numDC = new ArrayList<>();
+        Agents = new ArrayList<>();
         numTick = 0;
     }
 
@@ -119,6 +120,10 @@ public class Sim {
             }else{
                 g.drawOval(x, y, PARAM.getCellSize(), PARAM.getCellSize());
             }
+    }
+
+    public Map getMap(){
+        return map;
     }
     
     private Color getColor(String color) {

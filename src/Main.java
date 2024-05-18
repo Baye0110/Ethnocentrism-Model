@@ -53,6 +53,7 @@ public class Main extends JPanel implements ActionListener{
 	@Override
     public void actionPerformed(ActionEvent e) {
         moveAgents();
+        sim.go();
         updateStats();
         repaint();
     }
@@ -68,8 +69,6 @@ public class Main extends JPanel implements ActionListener{
             int dy = random.nextInt(3) - 1; // Random movement in range [-1, 1]
             agent.move(dx, dy);
         }
-        // Problem!!!!!
-        // sim.go();
     }
 
 

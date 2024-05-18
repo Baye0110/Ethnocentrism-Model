@@ -16,7 +16,10 @@ public class Sim {
     }
 
     public void go(){
-
+        immigration();
+        interaction();
+        reproduction();
+        death();
     }
 
     public void immigration(){

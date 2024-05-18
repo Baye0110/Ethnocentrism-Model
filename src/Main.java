@@ -27,13 +27,29 @@ public class Main extends JPanel implements ActionListener{
             int x = random.nextInt(PARAM.getGridSize());
             int y = random.nextInt(PARAM.getGridSize());
             String color = PARAM.getRandomColor();
-            String shape = PARAM.getRandomShape();
+            //String shape = PARAM.getRandomShape();
             boolean coopSame = PARAM.getImmigrantChanceCooprateWithSame();
             boolean coopDiff = PARAM.getImmigrantChanceCooprateWithDiff();
 			boolean death = PARAM.die();
 			double ptr = PARAM.getInitialPTR();
-            Agents.add(new Agent(x, y, color, shape, coopSame, 
+            // if the agent cooperates with same they are a circle
+            if(coopSame && coopDiff){
+                //filled in circle (altruist)
+                Agents.add(new Agent(x, y, color, "circle", coopSame, 
 			coopDiff, ptr, death));
+            }else if(coopSame && !coopDiff){
+                //empty circle (ethnocentric)
+                Agents.add(new Agent(x, y, color, "circle 2", coopSame, 
+			coopDiff, ptr, death));
+            }else if(!coopSame && coopDiff){
+                //filled in square (cosmopolitan)
+                Agents.add(new Agent(x, y, color, "square", coopSame, 
+			coopDiff, ptr, death));
+            }else{
+                //empty square (egoist)
+                Agents.add(new Agent(x, y, color, "square 2", coopSame, 
+			coopDiff, ptr, death));
+            }
         }
     }
 

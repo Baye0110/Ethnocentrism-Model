@@ -54,8 +54,13 @@ public class Agent {
     }
 
     public void move(int dx, int dy) {
-        this.xcor += dx;
-        this.ycor += dy;
+        xcor += dx;
+        ycor += dy;
+        // Ensure the agent stays within the grid boundaries
+        if (xcor < 0) xcor = 0;
+        if (xcor >= PARAM.getGridSize()) xcor = PARAM.getGridSize() - 1;
+        if (ycor < 0) ycor = 0;
+        if (ycor >= PARAM.getGridSize()) ycor = PARAM.getGridSize() - 1;
     }
     
     public void interact(Agent agent){

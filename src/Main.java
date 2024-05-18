@@ -8,13 +8,16 @@ import java.awt.*;
 
 public class Main extends JPanel implements ActionListener{
 	private List<Agent> Agents;
+    private Sim sim;
 
 	public Main() {
         Agents = new ArrayList<>();
         initalizeAgents();
-
+        sim = new Sim();
+        
         Timer timer = new Timer(PARAM.getTimerDelay(), this);
         timer.start();
+
     }
 
 	public void outputResults(){
@@ -56,39 +59,11 @@ public class Main extends JPanel implements ActionListener{
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-
         for (Agent agent : Agents) {
-            int x = agent.getX() * PARAM.getCellSize();
-            int y = agent.getY() * PARAM.getCellSize();
-
-            g.setColor(getColor(agent.getColor()));
-            if(agent.getShape().equals("circle")){
-                g.fillOval(x, y, PARAM.getCellSize(), PARAM.getCellSize());
-            }else if(agent.getShape().equals("square")){
-                g.fillRect(x, y, PARAM.getCellSize(), PARAM.getCellSize());
-            }else if(agent.getShape().equals("square 2")){
-                g.drawRect(x, y, PARAM.getCellSize(), PARAM.getCellSize());
-            }else{
-                g.drawOval(x, y, PARAM.getCellSize(), PARAM.getCellSize());
-            }
-
+           sim.updateShape(agent, g);
         }
     }
 	
-	private Color getColor(String color) {
-        switch (color) {
-            case "red":
-                return Color.RED;
-            case "blue":
-                return Color.BLUE;
-            case "yellow":
-                return Color.YELLOW;
-            case "green":
-                return Color.GREEN;
-            default:
-                return Color.BLACK;
-        }
-    }
 
 	@Override
     public void actionPerformed(ActionEvent e) {
@@ -108,17 +83,35 @@ public class Main extends JPanel implements ActionListener{
             int dy = random.nextInt(3) - 1; // Random movement in range [-1, 1]
             agent.move(dx, dy);
         }
+        // Problem!!!!!
+        // sim.go();
     }
 
 
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("Agent Simulation");
-            Main gui = new Main();
-            frame.add(gui);
+           
             frame.setSize(PARAM.getGridSize() * PARAM.getCellSize(), PARAM.getGridSize() * PARAM.getCellSize());
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    
+
+            JPanel buttonPanel = new JPanel();
+            JButton setEmptyButton = new JButton("setEmpty");
+            JButton setFullButton = new JButton("setFull");
+            JButton goButton = new JButton("go");
+
+            buttonPanel.add(setEmptyButton);
+            buttonPanel.add(setFullButton);
+            buttonPanel.add(goButton);
+
+            frame.add(buttonPanel, BorderLayout.NORTH);
+
+
+            Main gui = new Main();
+            frame.add(gui, BorderLayout.CENTER);
             frame.setVisible(true);
+
         });
 
 	}

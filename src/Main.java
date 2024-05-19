@@ -1,9 +1,5 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 import javax.swing.*;
 import java.awt.*;
 import java.io.FileWriter;
@@ -17,7 +13,6 @@ public class Main extends JPanel implements ActionListener{
     public boolean running;
 
 	public Main() {
-        //Agents = new ArrayList<>();
         sim = new Sim();
         timer = new Timer(PARAM.getTimerDelay(), this);
         running = false;
@@ -73,7 +68,6 @@ public class Main extends JPanel implements ActionListener{
 	@Override
     public void actionPerformed(ActionEvent e) {
         sim.go();
-        //updateStats();
         repaint();
         writeCSV();
     }

@@ -47,7 +47,6 @@ public class Sim {
         resetPTR();
         interaction();
         reproduction();
-
         death();
     }
 

@@ -52,16 +52,6 @@ public class Agent {
     public double getPTR() {
         return ptr;
     }
-
-    public void move(int dx, int dy) {
-        xcor += dx;
-        ycor += dy;
-        // Ensure the agent stays within the grid boundaries
-        if (xcor < 0) xcor = 0;
-        if (xcor >= PARAM.getGridSize()) xcor = PARAM.getGridSize() - 1;
-        if (ycor < 0) ycor = 0;
-        if (ycor >= PARAM.getGridSize()) ycor = PARAM.getGridSize() - 1;
-    }
     
     public void interact(Agent agent){
         if (color.equals(agent.getColor())) {
@@ -77,10 +67,6 @@ public class Agent {
         }
     }
 
-    public void cooperate(Agent agent){
-
-    }
-
     public void gainPTR(){
         this.ptr = ptr + PARAM.getGainOfReciving();
     }
@@ -89,7 +75,8 @@ public class Agent {
         this.ptr = ptr - PARAM.getCostOfGiving();
     }
 
-    public void reproduce() {
+    public void resetPTR() {
+        ptr = PARAM.getInitialPTR();
     }
 
     public void mutate(){

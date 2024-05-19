@@ -8,11 +8,11 @@ public class PARAM {
     private final static double COST_OF_GIVING = 0.01;
     private final static double GAIN_OF_RECEIVING = 0.03;
     private final static double IMMIGRANT_CHANCE_COOPERATE_WITH_SAME = 0.5;
-    private final static double IMMIGRANT_CHANCE_COOPERATE_WITH_DIFFERENT = 0.45;
+    private final static double IMMIGRANT_CHANCE_COOPERATE_WITH_DIFFERENT = 0.5;
     private final static String[] COLORS = {"red", "blue", "yellow", "green"};
     private final static String[] SHAPES = {"circle", "circle 2", "square", "square 2"};
-    private static final int GRID_SIZE = 20;
-    private static final int CELL_SIZE = 30;
+    private static final int GRID_SIZE = 50;
+    private static final int CELL_SIZE = 10;
     private static final int NUM_AGENTS = 100;
     private static final int TIMER_DELAY = 10; // milliseconds
     //public int NUM_TICK = 0;

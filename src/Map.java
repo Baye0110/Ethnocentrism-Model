@@ -24,4 +24,8 @@ public class Map {
     public Agent getElement(int row, int col) {
         return mapElements[row][col];
     }
+
+    public void clearAllElements() {
+        mapElements = new Agent[numRow][numCol];
+    }
 }

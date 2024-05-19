@@ -1,78 +1,82 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import javax.swing.*;
 import java.awt.*;
+import java.io.FileWriter;
+import java.io.BufferedWriter;
+import java.io.IOException;
 
 public class Main extends JPanel implements ActionListener{
-	public List<Agent> Agents;
     public Map map;
     public Sim sim;
     public Timer timer;
-    public boolean runing;
+    public boolean running;
 
 	public Main() {
-        Agents = new ArrayList<>();
+        //Agents = new ArrayList<>();
         sim = new Sim();
         timer = new Timer(PARAM.getTimerDelay(), this);
-        runing = false;
+        running = false;
         map = sim.getMap();
+        createCSV();
     }
 
-	public void outputResults(){
+    public void createCSV() {
+        try {
+            FileWriter fw = new FileWriter("Ethnocentrism.csv", false);
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write("tick, CC, CD, DC, DD\n");
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-	}
+    }
 
-    public void setAgents(List<Agent> Agents){
-        for(Agent agent : Agents){
-            this.Agents.add(agent);
+    private void writeCSV() {
+        try {
+            FileWriter fw = new FileWriter("Ethnocentrism.csv", true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write(sim.getNumTick() + ", " + sim.getNumCC() + ", " + sim.getNumCD() + ", " + sim.getNumDC() +
+                    ", " + sim.getNumDD() + "\n");
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    public boolean getRuning(){
-        return runing;
+    public boolean getRunning(){
+        return running;
     }
 
-    public void setRuning(boolean b){
-        this.runing = b;
-    }
-
-	public int getAL(){
-        return Agents.size();
+    public void setRunning(boolean b){
+        this.running = b;
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        for (Agent agent : Agents) {
-           sim.updateShape(agent, g);
+        for (int i = 0; i < PARAM.getGridSize(); i++) {
+            for (int j = 0; j < PARAM.getGridSize(); j++) {
+                Agent agent = map.getElement(i, j);
+                if (agent != null) {
+                    sim.updateShape(agent, g);
+                }
+            }
         }
     }
-	
 
 	@Override
     public void actionPerformed(ActionEvent e) {
-        moveAgents();
         sim.go();
         //updateStats();
         repaint();
+        writeCSV();
     }
-
-	private void updateStats() {
-        // Update statistics here if needed
-    }
-
-	private void moveAgents() {
-        Random random = new Random();
-        for (Agent agent : Agents) {
-            int dx = random.nextInt(3) - 1; // Random movement in range [-1, 1]
-            int dy = random.nextInt(3) - 1; // Random movement in range [-1, 1]
-            agent.move(dx, dy);
-        }
-    }
-
 
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(() -> {
@@ -101,7 +105,9 @@ public class Main extends JPanel implements ActionListener{
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     System.out.println("setEmpty button clicked");
+                    gui.setRunning(false);
                     gui.sim.setupEmpty();
+                    gui.repaint();
                 }
             });
 
@@ -109,9 +115,8 @@ public class Main extends JPanel implements ActionListener{
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     System.out.println("setFull button clicked");
+                    gui.setRunning(false);
                     gui.sim.setupFull();
-                    gui.setAgents(gui.sim.getAgents());
-                    System.out.println("length: " + gui.getAL());
                     gui.repaint();
                 }
             });
@@ -120,21 +125,18 @@ public class Main extends JPanel implements ActionListener{
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     System.out.println("go button clicked");
-                    if(gui.getRuning()){
+                    if(gui.getRunning()){
                         gui.timer.stop();
-                        gui.setRuning(false);
+                        gui.setRunning(false);
 
                     }else{
                         gui.timer.start();
-                        gui.setRuning(true);
+                        gui.setRunning(true);
                     }
                 }
             });
 
-
-
             frame.setVisible(true);
-
         });
 
 	}

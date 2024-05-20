@@ -98,8 +98,7 @@ public class Main extends JPanel implements ActionListener{
             setEmptyButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    System.out.println("setEmpty button clicked");
-                    gui.setRunning(false);
+                    System.out.println("setEmpty!");
                     gui.sim.setupEmpty();
                     gui.repaint();
                 }
@@ -108,8 +107,7 @@ public class Main extends JPanel implements ActionListener{
             setFullButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    System.out.println("setFull button clicked");
-                    gui.setRunning(false);
+                    System.out.println("setFull!");
                     gui.sim.setupFull();
                     gui.repaint();
                 }
@@ -122,10 +120,12 @@ public class Main extends JPanel implements ActionListener{
                     if(gui.getRunning()){
                         gui.timer.stop();
                         gui.setRunning(false);
+                        System.out.println("running stopped!");
 
                     }else{
                         gui.timer.start();
                         gui.setRunning(true);
+                        System.out.println("running!");
                     }
                 }
             });

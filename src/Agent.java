@@ -1,12 +1,9 @@
-import java.awt.Color;
 import java.util.Random;
 
 public class Agent {
     private String color;
     private boolean coopSame;
     private boolean coopDiff;
-    private String type;
-    private int id;
     private int xcor;
     private int ycor;
     private String shape;
@@ -51,6 +48,10 @@ public class Agent {
 
     public double getPTR() {
         return ptr;
+    }
+
+    public boolean isDeath(){
+        return death;
     }
     
     public void interact(Agent agent){

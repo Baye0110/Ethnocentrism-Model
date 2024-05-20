@@ -12,6 +12,7 @@ public class Sim {
     private int numTick;
     private int numEmptyPatch;
     private Map map;
+    private Random random;
 
     public Sim(){
         numCC = 0;
@@ -21,6 +22,7 @@ public class Sim {
         numTick = 0;
         numEmptyPatch = 0;
         map = new Map(PARAM.getGridSize(), PARAM.getGridSize());
+        random = new Random();
     }
 
     public void setupEmpty(){
@@ -48,26 +50,6 @@ public class Sim {
         interaction();
         reproduction();
         death();
-    }
-
-    public int getNumTick(){
-        return numTick;
-    }
-
-    public int getNumCC() {
-        return numCC;
-    }
-
-    public int getNumCD() {
-        return numCD;
-    }
-
-    public int getNumDD() {
-        return numDD;
-    }
-
-    public int getNumDC() {
-        return numDC;
     }
 
     public void initalizeAgents(){
@@ -128,27 +110,8 @@ public class Sim {
         }
     }
 
-    public Map getMap(){
-        return map;
-    }
-    
-    private Color getColor(String color) {
-        switch (color) {
-            case "red":
-                return Color.RED;
-            case "blue":
-                return Color.BLUE;
-            case "yellow":
-                return Color.YELLOW;
-            case "green":
-                return Color.GREEN;
-        }
-        return null;
-    }
-
     public void immigration(){
         int numImmi = Math.min(numEmptyPatch, PARAM.getImmgrantsPerDay());
-        Random random = new Random();
         for (int i = 0; i < numImmi; i++) {
             int x = random.nextInt(PARAM.getGridSize());
             int y = random.nextInt(PARAM.getGridSize());
@@ -158,7 +121,6 @@ public class Sim {
             }
             setupAgent(x, y);
             numEmptyPatch--;
-            System.out.println("immigration: " + i);
         }
     }
 
@@ -203,7 +165,6 @@ public class Sim {
     }
 
     public void reproduction(){
-        Random random = new Random();
         for (int i = 0; i < PARAM.getGridSize(); i++) {
             for (int j = 0; j < PARAM.getGridSize(); j++) {
                 // has element at row i and col j
@@ -216,46 +177,6 @@ public class Sim {
     }
 
     public void generateNeighbor(Agent agent) {
-        int x = agent.getX();
-        int y = agent.getY();
-        int xNeighbor = x;
-        int yNeighbor = y;
-
-        if (x - 1 >= 0 && map.isEmpty(x - 1, y)) {
-            xNeighbor = x - 1;
-            yNeighbor = y;
-        } else if (x + 1 < PARAM.getGridSize() && map.isEmpty(x + 1, y)) {
-            xNeighbor = x + 1;
-            yNeighbor = y;
-        } else if (y - 1 >= 0 && map.isEmpty(x, y - 1)) {
-            xNeighbor = x;
-            yNeighbor = y - 1;
-        } else if (y + 1 < PARAM.getGridSize() && map.isEmpty(x, y + 1)) {
-            xNeighbor = x;
-            yNeighbor = y + 1;
-        }
-
-        if (xNeighbor != x || yNeighbor != y) {
-            Agent neighbor = new Agent(xNeighbor, yNeighbor, agent.getColor(), agent.getShape(),
-                    agent.getCoopSame(), agent.getCoopDiff(), agent.getPTR(), false);
-            // mutate neighbor
-            neighbor.mutate();
-            map.setElement(xNeighbor, yNeighbor, neighbor);
-            numEmptyPatch--;
-
-            if (neighbor.getCoopSame() && neighbor.getCoopDiff()) {
-                numCC++;
-            } else if (neighbor.getCoopSame() && !neighbor.getCoopDiff()) {
-                numCD++;
-            } else if (!neighbor.getCoopSame() && neighbor.getCoopDiff()) {
-                numDC++;
-            } else {
-                numDD++;
-            }
-        }
-    }
-
-    public void generateNeighbor1(Agent agent) {
         int x = agent.getX();
         int y = agent.getY();
         List<Integer> xEmptyNeighbor = new ArrayList<>();
@@ -278,15 +199,11 @@ public class Sim {
             yEmptyNeighbor.add(y + 1);
         }
 
-        Random random = new Random();
-
         int size = xEmptyNeighbor.size();
-        int xNeighbor = 0;
-        int yNeighbor = 0;
         if (size != 0) {
             int index = random.nextInt(size);
-            xNeighbor = xEmptyNeighbor.get(index);
-            yNeighbor = yEmptyNeighbor.get(index);
+            int xNeighbor = xEmptyNeighbor.get(index);
+            int yNeighbor = yEmptyNeighbor.get(index);
 
             Agent neighbor = new Agent(xNeighbor, yNeighbor, agent.getColor(), agent.getShape(),
                     agent.getCoopSame(), agent.getCoopDiff(), agent.getPTR(), false);
@@ -294,16 +211,19 @@ public class Sim {
             neighbor.mutate();
             map.setElement(xNeighbor, yNeighbor, neighbor);
             numEmptyPatch--;
+            updateNum1(neighbor);
+        }
+    }
 
-            if (neighbor.getCoopSame() && neighbor.getCoopDiff()) {
-                numCC++;
-            } else if (neighbor.getCoopSame() && !neighbor.getCoopDiff()) {
-                numCD++;
-            } else if (!neighbor.getCoopSame() && neighbor.getCoopDiff()) {
-                numDC++;
-            } else {
-                numDD++;
-            }
+    public void updateNum1(Agent agent){
+        if (agent.getCoopSame() && agent.getCoopDiff()) {
+            numCC++;
+        } else if (agent.getCoopSame() && !agent.getCoopDiff()) {
+            numCD++;
+        } else if (!agent.getCoopSame() && agent.getCoopDiff()) {
+            numDC++;
+        } else {
+            numDD++;
         }
     }
 
@@ -312,21 +232,61 @@ public class Sim {
             for (int j = 0; j < PARAM.getGridSize(); j++) {
                 Agent agent = map.getElement(i, j);
                 if (agent != null && PARAM.die()) {
-                    if (agent.getCoopSame() && agent.getCoopDiff()) {
-                        numCC--;
-                    } else if (agent.getCoopSame() && !agent.getCoopDiff()) {
-                        numCD--;
-                    } else if (!agent.getCoopSame() && agent.getCoopDiff()) {
-                        numDC--;
-                    } else {
-                        numDD--;
-                    }
-
+                    updateNum2(agent);
                     map.setElement(i, j, null);
                     numEmptyPatch++;
-                    System.out.println("die: " + i + " " + j);
                 }
             }
         }
+    }
+
+    public void updateNum2(Agent agent){
+        if (agent.getCoopSame() && agent.getCoopDiff()) {
+            numCC--;
+        } else if (agent.getCoopSame() && !agent.getCoopDiff()) {
+            numCD--;
+        } else if (!agent.getCoopSame() && agent.getCoopDiff()) {
+            numDC--;
+        } else {
+            numDD--;
+        }
+    }
+
+    public int getNumCC() {
+        return numCC;
+    }
+
+    public int getNumCD() {
+        return numCD;
+    }
+
+    public int getNumDD() {
+        return numDD;
+    }
+
+    public int getNumDC() {
+        return numDC;
+    }
+
+    public Map getMap(){
+        return map;
+    }
+
+    public int getNumTick(){
+        return numTick;
+    }
+
+    private Color getColor(String color) {
+        switch (color) {
+            case "red":
+                return Color.RED;
+            case "blue":
+                return Color.BLUE;
+            case "yellow":
+                return Color.YELLOW;
+            case "green":
+                return Color.GREEN;
+        }
+        return null;
     }
 }

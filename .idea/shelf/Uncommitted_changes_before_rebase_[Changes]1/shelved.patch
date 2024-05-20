@@ -1,0 +1,371 @@
+Index: src/Map.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>\r\npublic class Map {\r\n    private int numRow;\r\n    private int numCol;\r\n    private Agent[][] mapElements;\r\n\r\n    public Map(int numRow, int numCol) {\r\n        this.numRow = numRow;\r\n        this.numCol = numCol;\r\n        mapElements = new Agent[numRow][numCol];\r\n    }\r\n\r\n    public void setElement(int row, int col, Agent agent){\r\n        mapElements[row][col] = agent;\r\n    }\r\n\r\n    public boolean isEmpty(int row, int col) {\r\n        if (mapElements[row][col] == null) {\r\n            return true;\r\n        }\r\n        return false;\r\n    }\r\n\r\n    public Agent getElement(int row, int col) {\r\n        return mapElements[row][col];\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/Map.java b/src/Map.java
+--- a/src/Map.java	(revision 2edd09c69774743f6890affe9d87bb8e37aeea4e)
++++ b/src/Map.java	(date 1716101933114)
+@@ -24,4 +24,8 @@
+     public Agent getElement(int row, int col) {
+         return mapElements[row][col];
+     }
++
++    public void clearAllElements() {
++        mapElements = new Agent[numRow][numCol];
++    }
+ }
+Index: src/Main.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import java.awt.event.ActionEvent;\r\nimport java.awt.event.ActionListener;\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\nimport java.util.Random;\r\nimport javax.swing.*;\r\nimport java.awt.*;\r\n\r\npublic class Main extends JPanel implements ActionListener{\r\n\tpublic List<Agent> Agents;\r\n    public Map map;\r\n    public Sim sim;\r\n    public Timer timer;\r\n    public boolean runing;\r\n\r\n\tpublic Main() {\r\n        Agents = new ArrayList<>();\r\n        sim = new Sim();\r\n        timer = new Timer(PARAM.getTimerDelay(), this);\r\n        runing = false;\r\n        map = sim.getMap();\r\n    }\r\n\r\n\tpublic void outputResults(){\r\n\r\n\t}\r\n\r\n    public void setAgents(List<Agent> Agents){\r\n        for(Agent agent : Agents){\r\n            this.Agents.add(agent);\r\n        }\r\n    }\r\n\r\n    public boolean getRuning(){\r\n        return runing;\r\n    }\r\n\r\n    public void setRuning(boolean b){\r\n        this.runing = b;\r\n    }\r\n\r\n\tpublic int getAL(){\r\n        return Agents.size();\r\n    }\r\n\r\n    @Override\r\n    protected void paintComponent(Graphics g) {\r\n        super.paintComponent(g);\r\n        for (Agent agent : Agents) {\r\n           sim.updateShape(agent, g);\r\n        }\r\n    }\r\n\t\r\n\r\n\t@Override\r\n    public void actionPerformed(ActionEvent e) {\r\n        moveAgents();\r\n        sim.go();\r\n        //updateStats();\r\n        repaint();\r\n    }\r\n\r\n\tprivate void updateStats() {\r\n        // Update statistics here if needed\r\n    }\r\n\r\n\tprivate void moveAgents() {\r\n        Random random = new Random();\r\n        for (Agent agent : Agents) {\r\n            int dx = random.nextInt(3) - 1; // Random movement in range [-1, 1]\r\n            int dy = random.nextInt(3) - 1; // Random movement in range [-1, 1]\r\n            agent.move(dx, dy);\r\n        }\r\n    }\r\n\r\n\r\n\tpublic static void main(String[] args) {\r\n\t\tSwingUtilities.invokeLater(() -> {\r\n            JFrame frame = new JFrame(\"Agent Simulation\");\r\n           \r\n            frame.setSize(PARAM.getGridSize() * PARAM.getCellSize(), PARAM.getGridSize() * PARAM.getCellSize());\r\n            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);\r\n    \r\n\r\n            JPanel buttonPanel = new JPanel();\r\n            JButton setEmptyButton = new JButton(\"setEmpty\");\r\n            JButton setFullButton = new JButton(\"setFull\");\r\n            JButton goButton = new JButton(\"go\");\r\n\r\n            buttonPanel.add(setEmptyButton);\r\n            buttonPanel.add(setFullButton);\r\n            buttonPanel.add(goButton);\r\n\r\n            frame.add(buttonPanel, BorderLayout.NORTH);\r\n\r\n\r\n            Main gui = new Main();\r\n            frame.add(gui, BorderLayout.CENTER);\r\n\r\n            setEmptyButton.addActionListener(new ActionListener() {\r\n                @Override\r\n                public void actionPerformed(ActionEvent e) {\r\n                    System.out.println(\"setEmpty button clicked\");\r\n                    gui.sim.setupEmpty();\r\n                }\r\n            });\r\n\r\n            setFullButton.addActionListener(new ActionListener() {\r\n                @Override\r\n                public void actionPerformed(ActionEvent e) {\r\n                    System.out.println(\"setFull button clicked\");\r\n                    gui.sim.setupFull();\r\n                    gui.setAgents(gui.sim.getAgents());\r\n                    System.out.println(\"length: \" + gui.getAL());\r\n                    gui.repaint();\r\n                }\r\n            });\r\n\r\n            goButton.addActionListener(new ActionListener() {\r\n                @Override\r\n                public void actionPerformed(ActionEvent e) {\r\n                    System.out.println(\"go button clicked\");\r\n                    if(gui.getRuning()){\r\n                        gui.timer.stop();\r\n                        gui.setRuning(false);\r\n\r\n                    }else{\r\n                        gui.timer.start();\r\n                        gui.setRuning(true);\r\n                    }\r\n                }\r\n            });\r\n\r\n\r\n\r\n            frame.setVisible(true);\r\n\r\n        });\r\n\r\n\t}\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/Main.java b/src/Main.java
+--- a/src/Main.java	(revision 2edd09c69774743f6890affe9d87bb8e37aeea4e)
++++ b/src/Main.java	(date 1716101933113)
+@@ -7,17 +7,17 @@
+ import java.awt.*;
+ 
+ public class Main extends JPanel implements ActionListener{
+-	public List<Agent> Agents;
++	//public List<Agent> Agents;
+     public Map map;
+     public Sim sim;
+     public Timer timer;
+-    public boolean runing;
++    public boolean running;
+ 
+ 	public Main() {
+-        Agents = new ArrayList<>();
++        //Agents = new ArrayList<>();
+         sim = new Sim();
+         timer = new Timer(PARAM.getTimerDelay(), this);
+-        runing = false;
++        running = false;
+         map = sim.getMap();
+     }
+ 
+@@ -25,38 +25,46 @@
+ 
+ 	}
+ 
+-    public void setAgents(List<Agent> Agents){
+-        for(Agent agent : Agents){
+-            this.Agents.add(agent);
+-        }
+-    }
++//    public void setAgents(List<Agent> Agents){
++//        for(Agent agent : Agents){
++//            this.Agents.add(agent);
++//        }
++//    }
+ 
+-    public boolean getRuning(){
+-        return runing;
++    public boolean getRunning(){
++        return running;
+     }
+ 
+-    public void setRuning(boolean b){
+-        this.runing = b;
++    public void setRunning(boolean b){
++        this.running = b;
+     }
+ 
+-	public int getAL(){
+-        return Agents.size();
+-    }
++//	public int getAL(){
++//        return Agents.size();
++//    }
+ 
+     @Override
+     protected void paintComponent(Graphics g) {
+         super.paintComponent(g);
+-        for (Agent agent : Agents) {
+-           sim.updateShape(agent, g);
++        for (int i = 0; i < PARAM.getGridSize(); i++) {
++            for (int j = 0; j < PARAM.getGridSize();j++) {
++                Agent agent = map.getElement(i, j);
++                if (agent != null) {
++                    sim.updateShape(agent, g);
++                }
++            }
+         }
++//        for (Agent agent : Agents) {
++//           sim.updateShape(agent, g);
++//        }
+     }
+ 	
+ 
+ 	@Override
+     public void actionPerformed(ActionEvent e) {
+-        moveAgents();
+-        sim.go();
+-        //updateStats();
++        //moveAgents();
++        //sim.go();
++        updateStats();
+         repaint();
+     }
+ 
+@@ -64,14 +72,14 @@
+         // Update statistics here if needed
+     }
+ 
+-	private void moveAgents() {
+-        Random random = new Random();
+-        for (Agent agent : Agents) {
+-            int dx = random.nextInt(3) - 1; // Random movement in range [-1, 1]
+-            int dy = random.nextInt(3) - 1; // Random movement in range [-1, 1]
+-            agent.move(dx, dy);
+-        }
+-    }
++//	private void moveAgents() {
++//        Random random = new Random();
++//        for (Agent agent : Agents) {
++//            int dx = random.nextInt(3) - 1; // Random movement in range [-1, 1]
++//            int dy = random.nextInt(3) - 1; // Random movement in range [-1, 1]
++//            agent.move(dx, dy);
++//        }
++//    }
+ 
+ 
+ 	public static void main(String[] args) {
+@@ -102,6 +110,7 @@
+                 public void actionPerformed(ActionEvent e) {
+                     System.out.println("setEmpty button clicked");
+                     gui.sim.setupEmpty();
++                    gui.repaint();
+                 }
+             });
+ 
+@@ -110,8 +119,8 @@
+                 public void actionPerformed(ActionEvent e) {
+                     System.out.println("setFull button clicked");
+                     gui.sim.setupFull();
+-                    gui.setAgents(gui.sim.getAgents());
+-                    System.out.println("length: " + gui.getAL());
++//                    gui.setAgents(gui.sim.getAgents());
++//                    System.out.println("length: " + gui.getAL());
+                     gui.repaint();
+                 }
+             });
+@@ -120,14 +129,20 @@
+                 @Override
+                 public void actionPerformed(ActionEvent e) {
+                     System.out.println("go button clicked");
+-                    if(gui.getRuning()){
++
++                    if(gui.getRunning()){
+                         gui.timer.stop();
+-                        gui.setRuning(false);
+-
++                        gui.setRunning(false);
++                        gui.repaint();
+                     }else{
+                         gui.timer.start();
+-                        gui.setRuning(true);
++                        gui.setRunning(true);
++                        while (gui.getRunning()) {
++                            gui.sim.go();
++                            gui.repaint();
++                        }
+                     }
++
+                 }
+             });
+ 
+Index: src/Sim.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import java.awt.Color;\r\nimport java.awt.Graphics;\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\nimport java.util.Random;\r\n\r\npublic class Sim {\r\n    private List<Agent> numCC;\r\n    private List<Agent> numCD;\r\n    private List<Agent> numDD;\r\n    private List<Agent> numDC;\r\n    private List<Agent> Agents;\r\n    private int numTick;\r\n    private int numEmptyPatch;\r\n    private Map map;\r\n\r\n    public Sim(){\r\n        numCC = new ArrayList<>();\r\n        numCD = new ArrayList<>();\r\n        numDD = new ArrayList<>();\r\n        numDC = new ArrayList<>();\r\n        Agents = new ArrayList<>();\r\n        numTick = 0;\r\n        map = new Map(PARAM.getGridSize(), PARAM.getGridSize());\r\n    }\r\n\r\n    public void setupEmpty(){\r\n        numCC = new ArrayList<>();\r\n        numCD = new ArrayList<>();\r\n        numDD = new ArrayList<>();\r\n        numDC = new ArrayList<>();\r\n        Agents = new ArrayList<>();\r\n        numTick = 0;\r\n    }\r\n\r\n    public void setupFull(){\r\n        //need to clear previous agents first and then initialize\r\n        initalizeAgents();\r\n        System.out.println(\"numCC: \" + numCC.size());\r\n        System.out.println(\"numCD: \" + numCD.size());\r\n        System.out.println(\"numDD: \" + numDD.size());\r\n        System.out.println(\"numDC: \" + numDC.size());\r\n        for(Agent agent: numCC){\r\n            Agents.add(agent);\r\n        }\r\n\r\n        for(Agent agent: numCD){\r\n            Agents.add(agent);\r\n        }\r\n\r\n        for(Agent agent: numDD){\r\n            Agents.add(agent);\r\n        }\r\n\r\n        for(Agent agent: numDC){\r\n            Agents.add(agent);\r\n        }\r\n        System.out.println(\"Agents: \" + Agents.size());\r\n        numTick = 0;\r\n    }\r\n\r\n    public void go(){\r\n        numTick += 1;\r\n        immigration();\r\n        interaction();\r\n        reproduction();\r\n        death();\r\n    }\r\n    public List<Agent> getAgents(){\r\n        return Agents;\r\n    }\r\n    public int getNumTick(){\r\n        return numTick;\r\n    }\r\n\r\n    public void initalizeAgents(){\r\n        Random random = new Random();\r\n        for (int i = 0; i < PARAM.getNumAgents(); i++) {\r\n            int x = random.nextInt(PARAM.getGridSize());\r\n            int y = random.nextInt(PARAM.getGridSize());\r\n            String color = PARAM.getRandomColor();\r\n            //String shape = PARAM.getRandomShape();\r\n            boolean coopSame = PARAM.getImmigrantChanceCooprateWithSame();\r\n            boolean coopDiff = PARAM.getImmigrantChanceCooprateWithDiff();\r\n\t\t\tboolean death = PARAM.die();\r\n\t\t\tdouble ptr = PARAM.getInitialPTR();\r\n            // if the agent cooperates with same they are a circle\r\n            if(coopSame && coopDiff){\r\n                //filled in circle (altruist)\r\n                numCC.add(new Agent(x, y, color, \"circle\", coopSame, \r\n\t\t\tcoopDiff, ptr, death));\r\n            }else if(coopSame && !coopDiff){\r\n                //empty circle (ethnocentric)\r\n                numCD.add(new Agent(x, y, color, \"circle 2\", coopSame, \r\n\t\t\tcoopDiff, ptr, death));\r\n            }else if(!coopSame && coopDiff){\r\n                //filled in square (cosmopolitan)\r\n                numDC.add(new Agent(x, y, color, \"square\", coopSame, \r\n\t\t\tcoopDiff, ptr, death));\r\n            }else{\r\n                //empty square (egoist)\r\n                numDD.add(new Agent(x, y, color, \"square 2\", coopSame, \r\n\t\t\tcoopDiff, ptr, death));\r\n            }\r\n        }\r\n    }\r\n\r\n    public void updateShape(Agent agent, Graphics g){\r\n\r\n            int x = agent.getX() * PARAM.getCellSize();\r\n            int y = agent.getY() * PARAM.getCellSize();\r\n\r\n            g.setColor(getColor(agent.getColor()));\r\n            if(agent.getShape().equals(\"circle\")){\r\n                g.fillOval(x, y, PARAM.getCellSize(), PARAM.getCellSize());\r\n            }else if(agent.getShape().equals(\"square\")){\r\n                g.fillRect(x, y, PARAM.getCellSize(), PARAM.getCellSize());\r\n            }else if(agent.getShape().equals(\"square 2\")){\r\n                g.drawRect(x, y, PARAM.getCellSize(), PARAM.getCellSize());\r\n            }else{\r\n                g.drawOval(x, y, PARAM.getCellSize(), PARAM.getCellSize());\r\n            }\r\n    }\r\n\r\n    public Map getMap(){\r\n        return map;\r\n    }\r\n    \r\n    private Color getColor(String color) {\r\n        switch (color) {\r\n            case \"red\":\r\n                return Color.RED;\r\n            case \"blue\":\r\n                return Color.BLUE;\r\n            case \"yellow\":\r\n                return Color.YELLOW;\r\n            case \"green\":\r\n                return Color.GREEN;\r\n        }\r\n        return null;\r\n    }\r\n\r\n    public void immigration(){\r\n        int numImmi = Math.min(numEmptyPatch, PARAM.getImmgrantsPerDay());\r\n        Random random = new Random();\r\n        for (int i = 0; i < numImmi; i++) {\r\n            int x = random.nextInt(PARAM.getGridSize());\r\n            int y = random.nextInt(PARAM.getGridSize());\r\n            while (!map.isEmpty(x, y)) {\r\n                x = random.nextInt(PARAM.getGridSize());\r\n                y = random.nextInt(PARAM.getGridSize());\r\n            }\r\n            String color = PARAM.getRandomColor();\r\n            //String shape = PARAM.getRandomShape();\r\n            boolean coopSame = PARAM.getImmigrantChanceCooprateWithSame();\r\n            boolean coopDiff = PARAM.getImmigrantChanceCooprateWithDiff();\r\n            boolean death = false;\r\n            double ptr = PARAM.getInitialPTR();\r\n             // if the agent cooperates with same they are a circle\r\n             if(coopSame && coopDiff){\r\n                //filled in circle (altruist)\r\n                Agent agent = new Agent(x, y, color, \"circle\", coopSame, \r\n\t\t\t    coopDiff, ptr, death);\r\n                map.setElement(x, y, agent);\r\n            }else if(coopSame && !coopDiff){\r\n                //empty circle (ethnocentric)\r\n                Agent agent = new Agent(x, y, color, \"circle 2\", coopSame, \r\n\t\t\t    coopDiff, ptr, death);\r\n                map.setElement(x, y, agent);\r\n            }else if(!coopSame && coopDiff){\r\n                //filled in square (cosmopolitan)\r\n                Agent agent = new Agent(x, y, color, \"square\", coopSame, \r\n\t\t\t    coopDiff, ptr, death);\r\n                map.setElement(x, y, agent);\r\n            }else{\r\n                //empty square (egoist)\r\n                Agent agent = new Agent(x, y, color, \"square 2\", coopSame, \r\n\t\t\t    coopDiff, ptr, death);\r\n                map.setElement(x, y, agent);\r\n            }\r\n        }\r\n    }\r\n\r\n    public void interaction(){\r\n        for (int i = 0; i < PARAM.getGridSize(); i++) {\r\n            for (int j = 0; j < PARAM.getGridSize(); j++) {\r\n                // has element at row i and col j\r\n                if (!map.isEmpty(i, j)) {\r\n                    Agent agent = map.getElement(i, j);\r\n                    // agent interact with neighbors\r\n                    if (i - 1 >= 0 && !map.isEmpty(i - 1, j)) {\r\n                        Agent neighbor = map.getElement(i - 1, j);\r\n                        agent.interact(neighbor);\r\n                    }\r\n                    if (i + 1 < PARAM.getGridSize() && !map.isEmpty(i + 1, j)) {\r\n                        Agent neighbor = map.getElement(i + 1, j);\r\n                        agent.interact(neighbor);\r\n                    }\r\n                    if (j - 1 >= 0 && !map.isEmpty(i, j - 1)) {\r\n                        Agent neighbor = map.getElement(i, j - 1);\r\n                        agent.interact(neighbor);\r\n                    }\r\n                    if (j + 1 < PARAM.getGridSize() && !map.isEmpty(i, j + 1)) {\r\n                        Agent neighbor = map.getElement(i, j + 1);\r\n                        agent.interact(neighbor);\r\n                    }\r\n                }\r\n            }\r\n        }\r\n    }\r\n\r\n    public void reproduction(){\r\n        Random random = new Random();\r\n        for (int i = 0; i < PARAM.getGridSize(); i++) {\r\n            for (int j = 0; j < PARAM.getGridSize(); j++) {\r\n                // has element at row i and col j\r\n                if (!map.isEmpty(i, j)) {\r\n                    Agent agent = map.getElement(i, j);\r\n                    if (random.nextFloat() < agent.getPTR()) {\r\n                        // get a random empty neighbor\r\n                        int xNeighbor = random.nextInt(2) * 2 - 1 + i;\r\n                        int yNeighbor = random.nextInt(2) * 2 - 1 + j;\r\n                        while (xNeighbor < 0 || xNeighbor >= PARAM.getGridSize() ||\r\n                                yNeighbor < 0 || yNeighbor >= PARAM.getGridSize() ||\r\n                                !map.isEmpty(xNeighbor, yNeighbor)) {\r\n                            xNeighbor = random.nextInt(2) * 2 - 1 + i;\r\n                            yNeighbor = random.nextInt(2) * 2 - 1 + j;\r\n                        }\r\n                        Agent neighbor = new Agent(xNeighbor, yNeighbor, agent.getColor(), agent.getShape(),\r\n                                agent.getCoopSame(), agent.getCoopDiff(), agent.getPTR(), false);\r\n                        // mutate neighbor\r\n                        neighbor.mutate();\r\n                        map.setElement(xNeighbor, yNeighbor, neighbor);\r\n                    }\r\n                }\r\n            }\r\n        }\r\n    }\r\n\r\n    public void death(){\r\n        Random random = new Random();\r\n        for (int i = 0; i < PARAM.getGridSize(); i++) {\r\n            for (int j = 0; j < PARAM.getGridSize(); j++) {\r\n                if (random.nextDouble(1.0) < PARAM.getDeathRate()) {\r\n                    map.setElement(i, j, null);\r\n                }\r\n            }\r\n        }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/Sim.java b/src/Sim.java
+--- a/src/Sim.java	(revision 2edd09c69774743f6890affe9d87bb8e37aeea4e)
++++ b/src/Sim.java	(date 1716101933114)
+@@ -30,33 +30,38 @@
+         numDD = new ArrayList<>();
+         numDC = new ArrayList<>();
+         Agents = new ArrayList<>();
++
++        map.clearAllElements();
++
+         numTick = 0;
++        numEmptyPatch = PARAM.getGridSize() * PARAM.getGridSize();
+     }
+ 
+     public void setupFull(){
+         //need to clear previous agents first and then initialize
+         initalizeAgents();
+-        System.out.println("numCC: " + numCC.size());
+-        System.out.println("numCD: " + numCD.size());
+-        System.out.println("numDD: " + numDD.size());
+-        System.out.println("numDC: " + numDC.size());
+-        for(Agent agent: numCC){
+-            Agents.add(agent);
+-        }
+-
+-        for(Agent agent: numCD){
+-            Agents.add(agent);
+-        }
+-
+-        for(Agent agent: numDD){
+-            Agents.add(agent);
+-        }
+-
+-        for(Agent agent: numDC){
+-            Agents.add(agent);
+-        }
+-        System.out.println("Agents: " + Agents.size());
++//        System.out.println("numCC: " + numCC.size());
++//        System.out.println("numCD: " + numCD.size());
++//        System.out.println("numDD: " + numDD.size());
++//        System.out.println("numDC: " + numDC.size());
++//        for(Agent agent: numCC){
++//            Agents.add(agent);
++//        }
++//
++//        for(Agent agent: numCD){
++//            Agents.add(agent);
++//        }
++//
++//        for(Agent agent: numDD){
++//            Agents.add(agent);
++//        }
++//
++//        for(Agent agent: numDC){
++//            Agents.add(agent);
++//        }
++//        System.out.println("Agents: " + Agents.size());
+         numTick = 0;
++        numEmptyPatch = 0;
+     }
+ 
+     public void go(){
+@@ -74,33 +79,9 @@
+     }
+ 
+     public void initalizeAgents(){
+-        Random random = new Random();
+-        for (int i = 0; i < PARAM.getNumAgents(); i++) {
+-            int x = random.nextInt(PARAM.getGridSize());
+-            int y = random.nextInt(PARAM.getGridSize());
+-            String color = PARAM.getRandomColor();
+-            //String shape = PARAM.getRandomShape();
+-            boolean coopSame = PARAM.getImmigrantChanceCooprateWithSame();
+-            boolean coopDiff = PARAM.getImmigrantChanceCooprateWithDiff();
+-			boolean death = PARAM.die();
+-			double ptr = PARAM.getInitialPTR();
+-            // if the agent cooperates with same they are a circle
+-            if(coopSame && coopDiff){
+-                //filled in circle (altruist)
+-                numCC.add(new Agent(x, y, color, "circle", coopSame, 
+-			coopDiff, ptr, death));
+-            }else if(coopSame && !coopDiff){
+-                //empty circle (ethnocentric)
+-                numCD.add(new Agent(x, y, color, "circle 2", coopSame, 
+-			coopDiff, ptr, death));
+-            }else if(!coopSame && coopDiff){
+-                //filled in square (cosmopolitan)
+-                numDC.add(new Agent(x, y, color, "square", coopSame, 
+-			coopDiff, ptr, death));
+-            }else{
+-                //empty square (egoist)
+-                numDD.add(new Agent(x, y, color, "square 2", coopSame, 
+-			coopDiff, ptr, death));
++        for (int i = 0; i < PARAM.getGridSize(); i++) {
++            for (int j = 0; j < PARAM.getGridSize(); j++) {
++                setupAgent(i, j);
+             }
+         }
+     }
+@@ -150,34 +131,38 @@
+                 x = random.nextInt(PARAM.getGridSize());
+                 y = random.nextInt(PARAM.getGridSize());
+             }
+-            String color = PARAM.getRandomColor();
+-            //String shape = PARAM.getRandomShape();
+-            boolean coopSame = PARAM.getImmigrantChanceCooprateWithSame();
+-            boolean coopDiff = PARAM.getImmigrantChanceCooprateWithDiff();
+-            boolean death = false;
+-            double ptr = PARAM.getInitialPTR();
+-             // if the agent cooperates with same they are a circle
+-             if(coopSame && coopDiff){
+-                //filled in circle (altruist)
+-                Agent agent = new Agent(x, y, color, "circle", coopSame, 
+-			    coopDiff, ptr, death);
+-                map.setElement(x, y, agent);
+-            }else if(coopSame && !coopDiff){
+-                //empty circle (ethnocentric)
+-                Agent agent = new Agent(x, y, color, "circle 2", coopSame, 
+-			    coopDiff, ptr, death);
+-                map.setElement(x, y, agent);
+-            }else if(!coopSame && coopDiff){
+-                //filled in square (cosmopolitan)
+-                Agent agent = new Agent(x, y, color, "square", coopSame, 
+-			    coopDiff, ptr, death);
+-                map.setElement(x, y, agent);
+-            }else{
+-                //empty square (egoist)
+-                Agent agent = new Agent(x, y, color, "square 2", coopSame, 
+-			    coopDiff, ptr, death);
+-                map.setElement(x, y, agent);
+-            }
++            setupAgent(x, y);
++            numEmptyPatch--;
++        }
++    }
++
++    public void setupAgent(int x, int y) {
++        String color = PARAM.getRandomColor();
++        boolean coopSame = PARAM.getImmigrantChanceCooprateWithSame();
++        boolean coopDiff = PARAM.getImmigrantChanceCooprateWithDiff();
++        boolean death = false;
++        double ptr = PARAM.getInitialPTR();
++        // if the agent cooperates with same they are a circle
++        if (coopSame && coopDiff){
++            //filled in circle (altruist)
++            Agent agent = new Agent(x, y, color, "circle", coopSame,
++                    coopDiff, ptr, death);
++            map.setElement(x, y, agent);
++        }else if(coopSame && !coopDiff){
++            //empty circle (ethnocentric)
++            Agent agent = new Agent(x, y, color, "circle 2", coopSame,
++                    coopDiff, ptr, death);
++            map.setElement(x, y, agent);
++        }else if(!coopSame && coopDiff){
++            //filled in square (cosmopolitan)
++            Agent agent = new Agent(x, y, color, "square", coopSame,
++                    coopDiff, ptr, death);
++            map.setElement(x, y, agent);
++        }else{
++            //empty square (egoist)
++            Agent agent = new Agent(x, y, color, "square 2", coopSame,
++                    coopDiff, ptr, death);
++            map.setElement(x, y, agent);
+         }
+     }
+ 
+@@ -231,6 +216,7 @@
+                         // mutate neighbor
+                         neighbor.mutate();
+                         map.setElement(xNeighbor, yNeighbor, neighbor);
++                        numEmptyPatch--;
+                     }
+                 }
+             }
+@@ -243,6 +229,7 @@
+             for (int j = 0; j < PARAM.getGridSize(); j++) {
+                 if (random.nextDouble(1.0) < PARAM.getDeathRate()) {
+                     map.setElement(i, j, null);
++                    numEmptyPatch--;
+                 }
+             }
+         }

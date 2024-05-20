@@ -5,15 +5,24 @@ import java.util.List;
 import java.util.Random;
 
 public class Sim {
+    // The number of altruist
     private int numCC;
+    // The number of ethnocentric
     private int numCD;
+    // The number of egoist
     private int numDD;
+    // The number of cosmopolitan
     private int numDC;
+    // The number of tick
     private int numTick;
+    // The number of empty patch/ spot on Map
     private int numEmptyPatch;
+    // The map used to store Agents
     private Map map;
+    // Random function used for possibility
     private Random random;
 
+    // Constructor
     public Sim(){
         numCC = 0;
         numCD = 0;
@@ -25,6 +34,9 @@ public class Sim {
         random = new Random();
     }
 
+    // Set all Empty of Agents, Set numbers of agents to 0
+    // Set Tick to 0
+    // Set number of empty Path to whole frame
     public void setupEmpty(){
         map.clearAllElements();
         numCC = 0;
@@ -35,6 +47,7 @@ public class Sim {
         numEmptyPatch = PARAM.getGridSize() * PARAM.getGridSize();
     }
 
+    // Set full of Agents and reset tick to 0 and Empty Path to 0
     public void setupFull(){
         //need to clear previous agents first and then initialize
         map.clearAllElements();
@@ -43,6 +56,8 @@ public class Sim {
         numEmptyPatch = 0;
     }
 
+    // Action method
+    // list all actions that agent can do
     public void go(){
         numTick += 1;
         immigration();
@@ -52,6 +67,7 @@ public class Sim {
         death();
     }
 
+    // Create agent with each coordinate on Map
     public void initalizeAgents(){
         for (int i = 0; i < PARAM.getGridSize(); i++) {
             for (int j = 0; j < PARAM.getGridSize(); j++) {
@@ -60,6 +76,7 @@ public class Sim {
         }
     }
 
+    // Create a agent
     public void setupAgent(int x, int y) {
         String color = PARAM.getRandomColor();
         boolean coopSame = PARAM.getImmigrantChanceCooprateWithSame();
@@ -94,11 +111,18 @@ public class Sim {
         }
     }
 
+    // Draw Shape of agent on Frame
     public void updateShape(Agent agent, Graphics g){
         int x = agent.getX() * PARAM.getCellSize();
         int y = agent.getY() * PARAM.getCellSize();
 
+        // set color to the shape
         g.setColor(getColor(agent.getColor()));
+        // Draw shape based on the name of shape
+        // circle => filled oval
+        // square => filled square
+        // circle 2 => oval
+        // square 2 => square
         if (agent.getShape().equals("circle")){
             g.fillOval(x, y, PARAM.getCellSize(), PARAM.getCellSize());
         } else if (agent.getShape().equals("square")){
@@ -110,11 +134,15 @@ public class Sim {
         }
     }
 
+    // Searching whether this is a empty coordinate
+    // immigration if yes, and number of empty patch - 1
     public void immigration(){
+        // Get the minimum number among empty patch and the number of immigration per day
         int numImmi = Math.min(numEmptyPatch, PARAM.getImmgrantsPerDay());
         for (int i = 0; i < numImmi; i++) {
             int x = random.nextInt(PARAM.getGridSize());
             int y = random.nextInt(PARAM.getGridSize());
+            //Keep searching if it is not empty
             while (!map.isEmpty(x, y)) {
                 x = random.nextInt(PARAM.getGridSize());
                 y = random.nextInt(PARAM.getGridSize());
@@ -124,6 +152,7 @@ public class Sim {
         }
     }
 
+    // Reset the PTR if agent is not null
     public void resetPTR() {
         for (int i = 0; i < PARAM.getGridSize(); i++) {
             for (int j = 0; j < PARAM.getGridSize(); j++) {
@@ -136,6 +165,8 @@ public class Sim {
         }
     }
 
+    // Interaction with neighbor(up,down, right, left)
+    // Agent will interacte with neighbor if it has neighbor
     public void interaction(){
         for (int i = 0; i < PARAM.getGridSize(); i++) {
             for (int j = 0; j < PARAM.getGridSize(); j++) {
@@ -164,6 +195,7 @@ public class Sim {
         }
     }
 
+    // Agent has chance to reproduce if it has empty spot nearby
     public void reproduction(){
         for (int i = 0; i < PARAM.getGridSize(); i++) {
             for (int j = 0; j < PARAM.getGridSize(); j++) {
@@ -176,12 +208,14 @@ public class Sim {
         }
     }
 
+    // Searching possible empty spot nearby and generate a neighbor
     public void generateNeighbor(Agent agent) {
         int x = agent.getX();
         int y = agent.getY();
         List<Integer> xEmptyNeighbor = new ArrayList<>();
         List<Integer> yEmptyNeighbor = new ArrayList<>();
 
+        // Adding possible empty spot nearby
         if (x - 1 >= 0 && map.isEmpty(x - 1, y)) {
             xEmptyNeighbor.add(x - 1);
             yEmptyNeighbor.add(y);
@@ -198,7 +232,7 @@ public class Sim {
             xEmptyNeighbor.add(x);
             yEmptyNeighbor.add(y + 1);
         }
-
+        // Generate neighbor if the list not empty (has empty spot nearby)
         int size = xEmptyNeighbor.size();
         if (size != 0) {
             int index = random.nextInt(size);
@@ -207,15 +241,23 @@ public class Sim {
 
             Agent neighbor = new Agent(xNeighbor, yNeighbor, agent.getColor(), agent.getShape(),
                     agent.getCoopSame(), agent.getCoopDiff(), agent.getPTR(), false);
-            // mutate neighbor
+            // Have a chance to nutate
             neighbor.mutate();
+            // add it on Map
             map.setElement(xNeighbor, yNeighbor, neighbor);
+            // Empty patch - 1
             numEmptyPatch--;
+            // Update Agents number
             updateNum1(neighbor);
         }
     }
 
+    // Update agent number
     public void updateNum1(Agent agent){
+        // if it is altruist, NumCC + 1
+        // if it is ethnocentric, NumCD + 1
+        // if it is egoist, NumDD + 1
+        // if it is cosmopolitan, NumDC + 1
         if (agent.getCoopSame() && agent.getCoopDiff()) {
             numCC++;
         } else if (agent.getCoopSame() && !agent.getCoopDiff()) {
@@ -227,10 +269,15 @@ public class Sim {
         }
     }
 
+    // Agent has chance to death
     public void death(){
         for (int i = 0; i < PARAM.getGridSize(); i++) {
             for (int j = 0; j < PARAM.getGridSize(); j++) {
                 Agent agent = map.getElement(i, j);
+                // if die
+                // update agent number
+                // set 2D map correspond spot to empty
+                // empty patch + 1
                 if (agent != null && PARAM.die()) {
                     updateNum2(agent);
                     map.setElement(i, j, null);
@@ -240,6 +287,11 @@ public class Sim {
         }
     }
 
+    // Update number of Agent who is died
+    // if it is altruist, NumCC - 1
+    // if it is ethnocentric, NumCD - 1
+    // if it is egoist, NumDD - 1
+    // if it is cosmopolitan, NumDC - 1
     public void updateNum2(Agent agent){
         if (agent.getCoopSame() && agent.getCoopDiff()) {
             numCC--;
@@ -252,30 +304,37 @@ public class Sim {
         }
     }
 
+    // Get the number of altruist
     public int getNumCC() {
         return numCC;
     }
 
+    // Get the number of ethnocentric
     public int getNumCD() {
         return numCD;
     }
-
+    
+    // Get the number of egoist
     public int getNumDD() {
         return numDD;
     }
 
+    // Get the number of cosmopolitan
     public int getNumDC() {
         return numDC;
     }
 
+    // Get the 2D Map
     public Map getMap(){
         return map;
     }
 
+    // Get the number of tick
     public int getNumTick(){
         return numTick;
     }
 
+    // Get the color
     private Color getColor(String color) {
         switch (color) {
             case "red":

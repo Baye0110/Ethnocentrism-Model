@@ -13,11 +13,7 @@ public class PARAM {
     private final static String[] SHAPES = {"circle", "circle 2", "square", "square 2"};
     private static final int GRID_SIZE = 50;
     private static final int CELL_SIZE = 10;
-    private static final int NUM_AGENTS = 100;
     private static final int TIMER_DELAY = 10; // milliseconds
-    //public int NUM_TICK = 0;
-    //public int NUM_ROW;
-    //public int NUM_COL;
 
     public static double getMutationRate(){
         return MUTATION_RATE;
@@ -50,9 +46,6 @@ public class PARAM {
     }
     public static int getCellSize(){
         return CELL_SIZE;
-    }
-    public static int getNumAgents(){
-        return NUM_AGENTS;
     }
     public static int getTimerDelay(){
         return TIMER_DELAY;

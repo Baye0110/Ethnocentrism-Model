@@ -91,15 +91,22 @@ public class Main extends JPanel implements ActionListener{
             frame.setSize(PARAM.getGridSize() * PARAM.getCellSize(), PARAM.getGridSize() * PARAM.getCellSize());
             // Set the Frame exit to close
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+            Color buttonColor = new Color(102,178,255);
+            Color buttColorActioned = new Color(0,76,153);
             
             // Create a JPanel with buttons
             JPanel buttonPanel = new JPanel();
+            buttonPanel.setBackground(Color.white);
             // Create a setEmpty button
             JButton setEmptyButton = new JButton("setEmpty");
+            setEmptyButton.setBackground(buttonColor);
             // Create a setFull button
             JButton setFullButton = new JButton("setFull");
+            setFullButton.setBackground(buttonColor);
             // Create a go button
             JButton goButton = new JButton("go");
+            goButton.setBackground(buttonColor);
 
             // Add three buttons on Jpanel
             buttonPanel.add(setEmptyButton);
@@ -110,6 +117,7 @@ public class Main extends JPanel implements ActionListener{
 
             // add main to frame and ser its layer to center
             Main gui = new Main();
+            gui.setBackground(Color.black);
             frame.add(gui, BorderLayout.CENTER);
 
             // SetEmpty button action listener
@@ -140,6 +148,11 @@ public class Main extends JPanel implements ActionListener{
             goButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    if (goButton.getBackground() == buttonColor){
+                        goButton.setBackground(buttColorActioned);
+                    }else{
+                        goButton.setBackground(buttonColor);
+                    }
                     System.out.println("go button clicked");
                     // if first click 
                     // start timer

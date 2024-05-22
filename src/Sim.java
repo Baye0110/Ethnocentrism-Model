@@ -159,6 +159,7 @@ public class Sim {
                 Agent agent = map.getElement(i, j);
                 if (agent != null) {
                     agent.resetPTR();
+                    agent.setYear(agent.getYear() - 10);
                 }
 
             }
@@ -173,6 +174,7 @@ public class Sim {
                 // has element at row i and col j
                 if (!map.isEmpty(i, j)) {
                     Agent agent = map.getElement(i, j);
+                    agent.setYear(agent.getYear() - 10);
                     // agent interact with neighbors
                     if (i - 1 >= 0 && !map.isEmpty(i - 1, j)) {
                         Agent neighbor = map.getElement(i - 1, j);

@@ -17,6 +17,7 @@ public class Agent {
     private double ptr;
     // Whether Agent died or not
     private boolean death;
+    private int year;
 
     //Constructor
     public Agent(int xcor, int ycor, String color, String shape, boolean coopSame, 
@@ -29,6 +30,15 @@ public class Agent {
         this.coopDiff = coopDiff;
         this.ptr = ptr;
         this.death = death;
+        year = 80;
+    }
+
+    public int getYear(){
+        return year;
+    }
+
+    public void setYear(int year){
+        this.year = year;
     }
 
     // Get Agent's X coordinate

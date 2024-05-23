@@ -92,14 +92,22 @@ public class Main extends JPanel implements ActionListener{
             // Set the Frame exit to close
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             
+            // create a button background color
+            Color buttonColor = new Color(153,204,255);
             // Create a JPanel with buttons
             JPanel buttonPanel = new JPanel();
             // Create a setEmpty button
             JButton setEmptyButton = new JButton("setEmpty");
+            // set the background color of setEmptyButton
+            setEmptyButton.setBackground(buttonColor);
             // Create a setFull button
             JButton setFullButton = new JButton("setFull");
+            // set the background color of setFullButton
+            setFullButton.setBackground(buttonColor);
             // Create a go button
             JButton goButton = new JButton("go");
+            // set the background color of goButton
+            goButton.setBackground(buttonColor);
 
             // Add three buttons on Jpanel
             buttonPanel.add(setEmptyButton);
@@ -110,6 +118,9 @@ public class Main extends JPanel implements ActionListener{
 
             // add main to frame and ser its layer to center
             Main gui = new Main();
+            //set the gui background as black
+            gui.setBackground(Color.black);
+            // add gui to the frame
             frame.add(gui, BorderLayout.CENTER);
 
             // SetEmpty button action listener
@@ -148,9 +159,13 @@ public class Main extends JPanel implements ActionListener{
                     if(gui.getRunning()){
                         gui.timer.stop();
                         gui.setRunning(false);
+                        //change the goButton background back when timer is stopped
+                        goButton.setBackground(buttonColor);
                         System.out.println("running stopped!");
 
                     }else{
+                        //change the goButton background when timer is runing
+                        goButton.setBackground(new Color(0,128,255));
                         gui.timer.start();
                         gui.setRunning(true);
                         System.out.println("running!");

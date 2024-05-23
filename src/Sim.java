@@ -285,21 +285,15 @@ public class Sim {
                     // added to the list
                     if (!neighborFull(i, j)) {
                         continue;
-                    } else if (i - 1 >= 0) {
-                        coopSame.add(map.getElement(i - 1, j).getCoopSame());
-                        coopDiff.add(map.getElement(i - 1, j).getCoopDiff());
-                    } else if (i + 1 < PARAM.getGridSize()) {
-                        coopSame.add(map.getElement(i + 1, j).getCoopSame());
-                        coopDiff.add(map.getElement(i + 1, j).getCoopDiff());
-                    } else if (j - 1 >= 0) {
-                        coopSame.add(map.getElement(i, j - 1).getCoopSame());
-                        coopDiff.add(map.getElement(i, j - 1).getCoopDiff());
-                    } else if (j + 1 < PARAM.getGridSize()) {
-                        coopSame.add(map.getElement(i, j + 1).getCoopSame());
-                        coopDiff.add(map.getElement(i, j + 1).getCoopDiff());
                     }
-                    // if the neighbors have the same coopSame type and same coopDiff type
-                    // the agent is adapted
+                    coopSame.add(map.getElement(i - 1, j).getCoopSame());
+                    coopDiff.add(map.getElement(i - 1, j).getCoopDiff());
+                    coopSame.add(map.getElement(i + 1, j).getCoopSame());
+                    coopDiff.add(map.getElement(i + 1, j).getCoopDiff());
+                    coopSame.add(map.getElement(i, j - 1).getCoopSame());
+                    coopDiff.add(map.getElement(i, j - 1).getCoopDiff());
+                    coopSame.add(map.getElement(i, j + 1).getCoopSame());
+                    coopDiff.add(map.getElement(i, j + 1).getCoopDiff());
                     if (booleanArraySame(coopSame) && booleanArraySame(coopDiff)) {
                         updateNum2(agent);
                         agent.setCoopSame(coopSame.get(0));
@@ -314,19 +308,19 @@ public class Sim {
     // Check if the adjacent position of row x and column y are occupied with agents
     private boolean neighborFull(int x, int y) {
         // Check if the left side is occupied
-        if (x - 1 >= 0 && map.isEmpty(x - 1, y)) {
+        if (x - 1 < 0 || map.isEmpty(x - 1, y)) {
             return false;
         }
         // Check if the right side is occupied
-        if (x + 1 < PARAM.getGridSize() && map.isEmpty(x + 1, y)) {
+        if (x + 1 >= PARAM.getGridSize() || map.isEmpty(x + 1, y)) {
             return false;
         }
         // Check if the up side is occupied
-        if (y - 1 >= 0 && map.isEmpty(x, y - 1)) {
+        if (y - 1 < 0 || map.isEmpty(x, y - 1)) {
             return false;
         }
         // Check if the down side is occupied
-        if (y + 1 < PARAM.getGridSize() && map.isEmpty(x, y + 1)) {
+        if (y + 1 >= PARAM.getGridSize() || map.isEmpty(x, y + 1)) {
             return false;
         }
         return true;

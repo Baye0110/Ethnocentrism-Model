@@ -64,6 +64,7 @@ public class Sim {
         resetPTR();
         interaction();
         reproduction();
+        adaptation();
         death();
     }
 
@@ -159,7 +160,6 @@ public class Sim {
                 Agent agent = map.getElement(i, j);
                 if (agent != null) {
                     agent.resetPTR();
-                    agent.setYear(agent.getYear() - 10);
                 }
 
             }
@@ -174,7 +174,6 @@ public class Sim {
                 // has element at row i and col j
                 if (!map.isEmpty(i, j)) {
                     Agent agent = map.getElement(i, j);
-                    agent.setYear(agent.getYear() - 10);
                     // agent interact with neighbors
                     if (i - 1 >= 0 && !map.isEmpty(i - 1, j)) {
                         Agent neighbor = map.getElement(i - 1, j);
@@ -271,6 +270,78 @@ public class Sim {
         }
     }
 
+    // If agent has four neighbors and the neighbors have the same cooperation type
+    // the agent will be adapted to their cooperation type
+    public void adaptation() {
+        for (int i = 0; i < PARAM.getGridSize(); i++) {
+            for (int j = 0; j < PARAM.getGridSize(); j++) {
+                Agent agent = map.getElement(i, j);
+                // if there is agent on row i and column j
+                if (agent != null) {
+                    ArrayList<Boolean> coopSame = new ArrayList<>();
+                    ArrayList<Boolean> coopDiff = new ArrayList<>();
+                    // if agent don't have four neighbors, the agent will not be adapted
+                    // otherwise the coopSame type and coopDiff type of neighbors will be
+                    // added to the list
+                    if (!neighborFull(i, j)) {
+                        continue;
+                    } else if (i - 1 >= 0) {
+                        coopSame.add(map.getElement(i - 1, j).getCoopSame());
+                        coopDiff.add(map.getElement(i - 1, j).getCoopDiff());
+                    } else if (i + 1 < PARAM.getGridSize()) {
+                        coopSame.add(map.getElement(i + 1, j).getCoopSame());
+                        coopDiff.add(map.getElement(i + 1, j).getCoopDiff());
+                    } else if (j - 1 >= 0) {
+                        coopSame.add(map.getElement(i, j - 1).getCoopSame());
+                        coopDiff.add(map.getElement(i, j - 1).getCoopDiff());
+                    } else if (j + 1 < PARAM.getGridSize()) {
+                        coopSame.add(map.getElement(i, j + 1).getCoopSame());
+                        coopDiff.add(map.getElement(i, j + 1).getCoopDiff());
+                    }
+                    // if the neighbors have the same coopSame type and same coopDiff type
+                    // the agent is adapted
+                    if (booleanArraySame(coopSame) && booleanArraySame(coopDiff)) {
+                        updateNum2(agent);
+                        agent.setCoopSame(coopSame.get(0));
+                        agent.setCoopDiff(coopDiff.get(0));
+                        updateNum1(agent);
+                    }
+                }
+            }
+        }
+    }
+
+    // Check if the adjacent position of row x and column y are occupied with agents
+    private boolean neighborFull(int x, int y) {
+        // Check if the left side is occupied
+        if (x - 1 >= 0 && map.isEmpty(x - 1, y)) {
+            return false;
+        }
+        // Check if the right side is occupied
+        if (x + 1 < PARAM.getGridSize() && map.isEmpty(x + 1, y)) {
+            return false;
+        }
+        // Check if the up side is occupied
+        if (y - 1 >= 0 && map.isEmpty(x, y - 1)) {
+            return false;
+        }
+        // Check if the down side is occupied
+        if (y + 1 < PARAM.getGridSize() && map.isEmpty(x, y + 1)) {
+            return false;
+        }
+        return true;
+    }
+
+    // Check if all boolean elements in the array are same
+    private boolean booleanArraySame(ArrayList<Boolean> coopArray) {
+        for (Boolean coop: coopArray) {
+            if (coop != coopArray.get(0)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     // Agent has chance to death
     public void death(){
         for (int i = 0; i < PARAM.getGridSize(); i++) {
@@ -315,7 +386,7 @@ public class Sim {
     public int getNumCD() {
         return numCD;
     }
-    
+
     // Get the number of egoist
     public int getNumDD() {
         return numDD;

@@ -19,8 +19,8 @@ public class Agent {
     private boolean death;
 
     //Constructor
-    public Agent(int xcor, int ycor, String color, String shape, boolean coopSame, 
-    boolean coopDiff, double ptr, boolean death){
+    public Agent(int xcor, int ycor, String color, String shape, boolean coopSame,
+                 boolean coopDiff, double ptr, boolean death){
         this.xcor = xcor;
         this.ycor = ycor;
         this.color = color;
@@ -61,6 +61,14 @@ public class Agent {
         return coopDiff;
     }
 
+    public void setCoopSame(boolean coopSame) {
+        this.coopSame = coopSame;
+    }
+
+    public void setCoopDiff(boolean coopDiff) {
+        this.coopDiff = coopDiff;
+    }
+
     // Get Agent's potential to reproduce(PTR) number
     public double getPTR() {
         return ptr;
@@ -70,7 +78,7 @@ public class Agent {
     public boolean isDeath(){
         return death;
     }
-    
+
     // Interaction with neighbor
     public void interact(Agent agent){
         // if the Agent has same color with neighbor, and

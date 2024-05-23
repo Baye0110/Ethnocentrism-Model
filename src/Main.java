@@ -91,11 +91,13 @@ public class Main extends JPanel implements ActionListener{
             frame.setSize(PARAM.getGridSize() * PARAM.getCellSize(), PARAM.getGridSize() * PARAM.getCellSize());
             // Set the Frame exit to close
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
             
             // create a button background color
             Color buttonColor = new Color(153,204,255);
             // Create a JPanel with buttons
             JPanel buttonPanel = new JPanel();
+            buttonPanel.setBackground(Color.white);
             // Create a setEmpty button
             JButton setEmptyButton = new JButton("setEmpty");
             // set the background color of setEmptyButton
